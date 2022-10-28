@@ -492,6 +492,15 @@ function App() {
                           {" "}
                           Claim Manually{" "}
                         </a>
+			</div><br></br>
+			<div className="connect-wallet text-center d-flex align-items-center justify-content-center">
+			 <a  
+                            href="#"
+                            className="btn btn-blue fs-18 rounded-pill"
+                          >
+                            {" "}
+                            Claim Airdrop{" "}
+                          </a>
                       </div>
                     </div>
                   </div>
