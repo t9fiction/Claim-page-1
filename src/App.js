@@ -4,7 +4,13 @@ import Web3Modal from "web3modal";
 import swal from "sweetalert";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import { contract_address, contract_abi, speedy_nodes } from "./config.js";
+import {
+  contract_address_vesting,
+  contract_abi_vesting,
+  contract_address_airdrop,
+  contract_abi_airdrop,
+  speedy_nodes,
+} from "./config.js";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 function App() {
@@ -22,14 +28,10 @@ function App() {
   //     // document.body.append('<div class="modal-backdrop fade" onClick:{toggle_Show}></div>');
   //   }
   // }
-
-  useEffect(() => {
-    //fetch_data();
-    //connect_wallet();
-  }, []);
   const [connected, setConnected] = useState(false);
   const [wladdress, setwladdress] = useState();
-  const [contract, setContract] = useState();
+  const [vestingContract, setVestingContract] = useState();
+  const [airdropContract, setAirdropContract] = useState();
   const [balance, setbalance] = useState(0);
   const [pending, setpending] = useState(0);
   const [totalrewards, settotalrewards] = useState(0);
@@ -38,6 +40,29 @@ function App() {
   const [price, set_price] = useState(0);
   const [web3Global, setweb3global] = useState();
   const [isModal, setIsModal] = useState(false);
+
+  const [walletstatus, set_walletstatus] = useState("Connect Wallet");
+
+  const startFunction = async () => {
+    // await loadDisconnect()
+    const web3 = new Web3(speedy_nodes);
+    const isVestingContract = new web3.eth.Contract(
+      contract_abi_vesting,
+      contract_address_vesting
+    );
+    const isAirdropContract = new web3.eth.Contract(
+      contract_abi_airdrop,
+      contract_address_airdrop
+    );
+    setVestingContract(isVestingContract);
+    setAirdropContract(isAirdropContract);
+    setweb3global(web3);
+  };
+
+  useEffect(() => {
+    //fetch_data();
+    //connect_wallet();
+  }, []);
   // const [total, set_total] = useState(0.2);
   // set_total(mintNumber * price);
   let total = mintNumber * price;
@@ -46,35 +71,23 @@ function App() {
     // sale_controller();
   };
 
-  const [walletstatus, set_walletstatus] = useState("Connect Wallet");
-
-
-  const startFunction = async () => {
-    // await loadDisconnect()
-    const web3 = new Web3(speedy_nodes);
-    const isContract = new web3.eth.Contract(contract_abi, contract_address);
-    setContract(isContract);
-    setweb3global(web3);
-  };
-  
   // First one time run
   useEffect(() => {
     const fun = async () => {
       await startFunction();
     };
     fun();
-    console.log("contract : ", contract);
+    console.log("vestingContract : ", vestingContract);
   }, []);
 
   useEffect(() => {
     //connect_wallet();
-    console.log("contract : ", contract);
-    if (!isModal && web3Global != "") {
+    console.log("vestingContract : ", vestingContract);
+    if (!isModal && web3Global != "" && vestingContract) {
       console.log("loaded web3");
       fetch_data();
     }
-  }, [web3Global]);
-
+  }, [web3Global, vestingContract]);
 
   async function connect_wallet() {
     // if (Web3.givenProvider) {
@@ -113,15 +126,25 @@ function App() {
       const addresses = await web3.eth.getAccounts();
       const address = addresses[0];
       console.log("address a", address);
-      
+
       web3.eth.net.getId().then((result) => {
         console.log("Network id: " + result);
         if (result !== 1) {
           swal("Wrong Network Selected. Select Ethereum Mainnet");
-        }else{
+        } else {
           setweb3global(web3);
-          const isContract = new web3.eth.Contract(contract_abi, contract_address);
-          setContract(isContract);
+          // Added both the new contracts and loaded
+          const isVestingContract = new web3.eth.Contract(
+            contract_abi_vesting,
+            contract_address_vesting
+          );
+          const isAirdropContract = new web3.eth.Contract(
+            contract_abi_airdrop,
+            contract_address_airdrop
+          );
+          setVestingContract(isVestingContract);
+          setAirdropContract(isAirdropContract);
+
           setIsModal(true);
           set_walletstatus("Wallet Connected");
           setConnected(true);
@@ -159,13 +182,13 @@ function App() {
     console.log("addresses[0]: " + addresses[0]);
     // console.log("addresses[1]: "+addresses[1])
     // console.log("Default address: "+await web3.eth.defaultAccount)
-    contract.methods.balanceOf(address).call((err, result) => {
+    vestingContract.methods.balanceOf(address).call((err, result) => {
       console.log("error: " + err);
       console.log(result);
       setbalance(result);
     });
 
-    contract.methods
+    vestingContract.methods
       .getVestingSchedulesCountByBeneficiary(address)
       .call((err, result) => {
         console.log("error: " + err);
@@ -173,11 +196,13 @@ function App() {
         setpending(result);
       });
 
-    contract.methods.getVestingSchedulesTotalAmount().call((err, result) => {
-      console.log("error: " + err);
-      console.log(result);
-      settotalrewards(result);
-    });
+    vestingContract.methods
+      .getVestingSchedulesTotalAmount()
+      .call((err, result) => {
+        console.log("error: " + err);
+        console.log(result);
+        settotalrewards(result);
+      });
     // await contract.methods.tokenByIndex(i).call();
     // }
   }
@@ -193,25 +218,53 @@ function App() {
       // console.log("addresses[1]: "+addresses[1])
       // console.log("Default address: "+await web3.eth.defaultAccount)
       try {
-        const estemated_Gas = await contract.methods
+        const estemated_Gas = await vestingContract.methods
           .claimFromAllVestings()
           .send({
             from: address,
             maxPriorityFeePerGas: null,
             maxFeePerGas: null,
           });
-        console.log(estemated_Gas);
-        const result = await contract.methods.claimFromAllVestings().send({
-          from: address,
-          gas: estemated_Gas,
-          maxPriorityFeePerGas: null,
-          maxFeePerGas: null,
-        });
+
+        const result = await vestingContract.methods
+          .claimFromAllVestings()
+          .send({
+            from: address,
+            gas: estemated_Gas,
+            maxPriorityFeePerGas: null,
+            maxFeePerGas: null,
+          });
       } catch (error) {
         show_error_alert(error);
       }
     }
   }
+
+  // Airdrop function
+  async function aridropClaim() {
+    if (isModal) {
+      
+      const addresses = await web3Global.eth.getAccounts();
+      const address = addresses[0];
+      console.log("addresses[0]: " + addresses[0]);
+      
+      try {
+
+        console.log("Airdrop Contract : ",airdropContract)
+        const result = await airdropContract.methods
+          .claimToken()
+          .send({
+            from: address
+          });
+
+      } catch (error) {
+        show_error_alert(error);
+      }
+    }else{
+      alert("Please connect wallet first");
+    }
+  }
+
   return (
     <div>
       {/* Navbar Start */}
@@ -292,7 +345,7 @@ function App() {
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a className="nav-link" href="#">
+                      <a className="nav-link" href="#" onClick={claim_manually}>
                         Claim
                       </a>
                     </li>
@@ -492,15 +545,13 @@ function App() {
                           {" "}
                           Claim Manually{" "}
                         </a>
-			</div><br></br>
-			<div className="connect-wallet text-center d-flex align-items-center justify-content-center">
-			 <a  
-                            href="#"
-                            className="btn btn-blue fs-18 rounded-pill"
-                          >
-                            {" "}
-                            Claim Airdrop{" "}
-                          </a>
+                      </div>
+                      <br></br>
+                      <div className="connect-wallet text-center d-flex align-items-center justify-content-center">
+                        <a href="#" className="btn btn-blue fs-18 rounded-pill" onClick={aridropClaim}>
+                          {" "}
+                          Claim Airdrop{" "}
+                        </a>
                       </div>
                     </div>
                   </div>
