@@ -237,30 +237,27 @@ function App() {
       } catch (error) {
         show_error_alert(error);
       }
+    } else {
+      alert("Please connect wallet first");
     }
   }
 
   // Airdrop function
   async function aridropClaim() {
     if (isModal) {
-      
       const addresses = await web3Global.eth.getAccounts();
       const address = addresses[0];
       console.log("addresses[0]: " + addresses[0]);
-      
+
       try {
-
-        console.log("Airdrop Contract : ",airdropContract)
-        const result = await airdropContract.methods
-          .claimToken()
-          .send({
-            from: address
-          });
-
+        console.log("Airdrop Contract : ", airdropContract);
+        const result = await airdropContract.methods.claimToken().send({
+          from: address,
+        });
       } catch (error) {
         show_error_alert(error);
       }
-    }else{
+    } else {
       alert("Please connect wallet first");
     }
   }
@@ -548,7 +545,11 @@ function App() {
                       </div>
                       <br></br>
                       <div className="connect-wallet text-center d-flex align-items-center justify-content-center">
-                        <a href="#" className="btn btn-blue fs-18 rounded-pill" onClick={aridropClaim}>
+                        <a
+                          href="#"
+                          className="btn btn-blue fs-18 rounded-pill"
+                          onClick={aridropClaim}
+                        >
                           {" "}
                           Claim Airdrop{" "}
                         </a>
