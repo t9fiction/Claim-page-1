@@ -19,6 +19,8 @@
     "ethers": "^5.5.3",
     "ipfs": "^0.62.3",
     "ipfs-http-client": "^49.0.4",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.3.3",
     "os": "^0.1.2",
     "os-browserify": "^0.3.0",
     "particles.js": "^2.0.0",

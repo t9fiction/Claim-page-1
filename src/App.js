@@ -13,6 +13,7 @@ import {
   contract_abi_merkel,
   speedy_nodes,
 } from "./config.js";
+import { pot1, pot2, pot3, pot4, pot5 } from "./addresses";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 function App() {
@@ -61,12 +62,6 @@ function App() {
     setweb3global(web3);
   };
 
-  useEffect(() => {
-    //fetch_data();
-    //connect_wallet();
-  }, []);
-  // const [total, set_total] = useState(0.2);
-  // set_total(mintNumber * price);
   let total = mintNumber * price;
 
   const mintButtonClickHandler = () => {
@@ -79,17 +74,16 @@ function App() {
       await startFunction();
     };
     fun();
-    console.log("vestingContract : ", vestingContract);
   }, []);
 
   useEffect(() => {
     //connect_wallet();
-    console.log("vestingContract : ", vestingContract);
-    if (!isModal && web3Global != "" && vestingContract) {
+    if (connected && web3Global != "" && vestingContract) {
       console.log("loaded web3");
       fetch_data();
+      merkle_Pot();
     }
-  }, [web3Global, vestingContract]);
+  }, [web3Global, vestingContract, connected]);
 
   async function connect_wallet() {
     // if (Web3.givenProvider) {
@@ -127,10 +121,8 @@ function App() {
       const web3 = new Web3(provider);
       const addresses = await web3.eth.getAccounts();
       const address = addresses[0];
-      console.log("address a", address);
 
       web3.eth.net.getId().then((result) => {
-        console.log("Network id: " + result);
         if (result !== 1) {
           swal("Wrong Network Selected. Select Ethereum Mainnet");
         } else {
@@ -153,7 +145,7 @@ function App() {
         }
       });
       setwladdress(address);
-      console.log("Default address: " + address);
+      // console.log("Default address: " + address);
       fetch_data();
     }
   }
@@ -173,50 +165,109 @@ function App() {
   }
 
   async function fetch_data() {
-    // if (Web3.givenProvider) {
-    // const web3 = new Web3(Web3.givenProvider);
-    // const web3 = new Web3(speedy_nodes);
-    // await Web3.givenProvider.enable();
-    // const contract = new web3.eth.Contract(contract_abi, contract_address);
+    if (connected) {
+      // const web3 = new Web3(Web3.givenProvider);
+      // const web3 = new Web3(speedy_nodes);
+      // await Web3.givenProvider.enable();
+      // const contract = new web3.eth.Contract(contract_abi, contract_address);
 
-    const addresses = await web3Global.eth.getAccounts();
-    const address = addresses[0];
-    console.log("addresses[0]: " + addresses[0]);
-    // console.log("addresses[1]: "+addresses[1])
-    // console.log("Default address: "+await web3.eth.defaultAccount)
-    vestingContract.methods.balanceOf(address).call((err, result) => {
-      console.log("error: " + err);
-      console.log(result);
-      setbalance(result);
-    });
-
-    vestingContract.methods
-      .getVestingSchedulesCountByBeneficiary(address)
-      .call((err, result) => {
-        console.log("error: " + err);
-        console.log(result);
-        setpending(result);
+      const addresses = await web3Global.eth.getAccounts();
+      const address = addresses[0];
+      // console.log("addresses[0]: " + addresses[0]);
+      // console.log("addresses[1]: "+addresses[1])
+      // console.log("Default address: "+await web3.eth.defaultAccount)
+      vestingContract.methods.balanceOf(address).call((err, result) => {
+        setbalance(result);
       });
 
-    vestingContract.methods
-      .getVestingSchedulesTotalAmount()
-      .call((err, result) => {
-        console.log("error: " + err);
-        console.log(result);
-        settotalrewards(result);
-      });
-    // await contract.methods.tokenByIndex(i).call();
-    // }
+      vestingContract.methods
+        .getVestingSchedulesCountByBeneficiary(address)
+        .call((err, result) => {
+          // console.log("error: " + err);
+          // console.log(result);
+          setpending(result);
+        });
+
+      vestingContract.methods
+        .getVestingSchedulesTotalAmount()
+        .call((err, result) => {
+          console.log("error: " + err);
+          console.log(result);
+          settotalrewards(result);
+        });
+    }
   }
 
+  // Merkle tree
+  async function merkle_Pot() {
+    if (connected) {
+      const addresses = await web3Global.eth.getAccounts();
+      const address = addresses[0];
+
+      const buf2hex = (x) => "0x" + x.toString("hex");
+
+      const leaves1 = pot1.map((x) => keccak256(x));
+      const leaves2 = pot2.map((x) => keccak256(x));
+      const leaves3 = pot3.map((x) => keccak256(x));
+      const leaves4 = pot4.map((x) => keccak256(x));
+      const leaves5 = pot5.map((x) => keccak256(x));
+
+      const tree1 = new MerkleTree(leaves1, keccak256, { sortPairs: true });
+      const tree2 = new MerkleTree(leaves2, keccak256, { sortPairs: true });
+      const tree3 = new MerkleTree(leaves3, keccak256, { sortPairs: true });
+      const tree4 = new MerkleTree(leaves4, keccak256, { sortPairs: true });
+      const tree5 = new MerkleTree(leaves5, keccak256, { sortPairs: true });
+
+      const root1 = buf2hex(tree1.getRoot());
+      const root2 = buf2hex(tree2.getRoot());
+      const root3 = buf2hex(tree3.getRoot());
+      const root4 = buf2hex(tree4.getRoot());
+      const root5 = buf2hex(tree5.getRoot());
+
+      const leaf = keccak256(address);
+
+      const proof1 = tree1.getProof(leaf).map((x) => buf2hex(x.data));
+      const proof2 = tree2.getProof(leaf).map((x) => buf2hex(x.data));
+      const proof3 = tree3.getProof(leaf).map((x) => buf2hex(x.data));
+      const proof4 = tree4.getProof(leaf).map((x) => buf2hex(x.data));
+      const proof5 = tree5.getProof(leaf).map((x) => buf2hex(x.data));
+
+      console.log(tree1.verify(proof1, leaf, root1));
+      console.log(tree2.verify(proof2, leaf, root2));
+      console.log(tree3.verify(proof3, leaf, root3));
+      console.log(tree4.verify(proof4, leaf, root4));
+      console.log(tree5.verify(proof5, leaf, root5));
+
+      const verification1 = tree1.verify(proof1, leaf, root1);
+      const verification2 = tree2.verify(proof2, leaf, root2);
+      const verification3 = tree3.verify(proof3, leaf, root3);
+      const verification4 = tree4.verify(proof4, leaf, root4);
+      const verification5 = tree5.verify(proof5, leaf, root5);
+
+      return {
+        proof1,
+        proof2,
+        proof3,
+        proof4,
+        proof5,
+        verification1,
+        verification2,
+        verification3,
+        verification4,
+        verification5,
+      };
+    }
+  }
+  // end merkel tree
+
   async function claim_manually() {
-    if (isModal) {
+    if (connected) {
       // const web3 = new Web3(Web3.givenProvider);
       // await Web3.givenProvider.enable();
       // const contract = new web3.eth.Contract(contract_abi, contract_address);
       const addresses = await web3Global.eth.getAccounts();
       const address = addresses[0];
-      console.log("addresses[0]: " + addresses[0]);
+      // console.log("addresses[0]: " + addresses[0]);
       // console.log("addresses[1]: "+addresses[1])
       // console.log("Default address: "+await web3.eth.defaultAccount)
       try {
@@ -240,22 +291,50 @@ function App() {
         show_error_alert(error);
       }
     } else {
-      alert("Please connect wallet first");
+      swal("Please connect wallet first");
     }
   }
 
   // Airdrop function
   async function aridropClaim() {
-    if (isModal) {
+    if (connected) {
       const addresses = await web3Global.eth.getAccounts();
+      const {
+        proof1,
+        proof2,
+        proof3,
+        proof4,
+        proof5,
+        verification1,
+        verification2,
+        verification3,
+        verification4,
+        verification5,
+      } = await merkle_Pot();
       const address = addresses[0];
-      console.log("addresses[0]: " + addresses[0]);
+      // console.log("addresses[0]: " + addresses[0]);
+
+      console.log("Airdrop Contract : ", airdropContract);
 
       try {
-        console.log("Airdrop Contract : ", airdropContract);
-        const result = await airdropContract.methods.claimToken().send({
-          from: address,
-        });
+        if (
+          verification1 ||
+          verification2 ||
+          verification3 ||
+          verification4 ||
+          verification5
+        ) {
+          const result = await airdropContract.methods
+            .claimToken(proof1, proof2, proof3, proof4, proof5)
+            .send({
+              from: address,
+              // gas: estemated_Gas,
+              maxPriorityFeePerGas: null,
+              maxFeePerGas: null,
+            });
+        } else {
+          swal("Your address is not whitelisted");
+        }
       } catch (error) {
         show_error_alert(error);
       }
