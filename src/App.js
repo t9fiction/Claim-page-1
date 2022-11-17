@@ -232,11 +232,11 @@ function App() {
       const proof4 = tree4.getProof(leaf).map((x) => buf2hex(x.data));
       const proof5 = tree5.getProof(leaf).map((x) => buf2hex(x.data));
 
-      console.log(tree1.verify(proof1, leaf, root1));
-      console.log(tree2.verify(proof2, leaf, root2));
-      console.log(tree3.verify(proof3, leaf, root3));
-      console.log(tree4.verify(proof4, leaf, root4));
-      console.log(tree5.verify(proof5, leaf, root5));
+      console.log("root1", root1);
+      console.log("root2", root2);
+      console.log("root3", root3);
+      console.log("root4", root4);
+      console.log("root5", root5);
 
       const verification1 = tree1.verify(proof1, leaf, root1);
       const verification2 = tree2.verify(proof2, leaf, root2);
