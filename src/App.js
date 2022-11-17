@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import Web3Modal from "web3modal";
+import keccak256 from "keccak256";
+import { MerkleTree } from "merkletreejs";
 import swal from "sweetalert";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import {
   contract_address_vesting,
   contract_abi_vesting,
-  contract_address_airdrop,
-  contract_abi_airdrop,
+  contract_address_merkel,
+  contract_abi_merkel,
   speedy_nodes,
 } from "./config.js";
 import Popup from "reactjs-popup";
@@ -51,8 +53,8 @@ function App() {
       contract_address_vesting
     );
     const isAirdropContract = new web3.eth.Contract(
-      contract_abi_airdrop,
-      contract_address_airdrop
+      contract_abi_merkel,
+      contract_address_merkel
     );
     setVestingContract(isVestingContract);
     setAirdropContract(isAirdropContract);
@@ -139,8 +141,8 @@ function App() {
             contract_address_vesting
           );
           const isAirdropContract = new web3.eth.Contract(
-            contract_abi_airdrop,
-            contract_address_airdrop
+            contract_abi_merkel,
+            contract_address_merkel
           );
           setVestingContract(isVestingContract);
           setAirdropContract(isAirdropContract);
