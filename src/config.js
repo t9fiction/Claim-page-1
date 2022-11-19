@@ -2,8 +2,286 @@
 export const speedy_nodes =
   "https://mainnet.infura.io/v3/3ca1583421a74069b07075f209879afb";
 // export const contract_address = "0xefd3505a2ec51385705fd0268ea337a2ee5bca14";
-export const contract_address_vesting = "0xE7FafeBd53Def137595aB6B7697D76F49b2073f6";
-export const contract_address_airdrop = "0x3698746004A02b8Be32924091d88c93E12581e59";
+export const contract_address_vesting =
+  "0xE7FafeBd53Def137595aB6B7697D76F49b2073f6";
+export const contract_address_airdrop =
+  "0x3698746004A02b8Be32924091d88c93E12581e59";
+export const contract_address_merkel =
+  "0xB91aC9d9D83aFD5F41EC1c3f1De2D57CAe30709D";
+export const contract_abi_merkel = [
+  { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "address", name: "", type: "address" },
+      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
+    ],
+    name: "WinnerTokensClaimed",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "allowedClaimCount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "allowedClaimCount_", type: "uint256" },
+    ],
+    name: "changeAllowedClaimCount",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "claimStartTime_", type: "uint256" },
+      { internalType: "uint256", name: "vestingStart_", type: "uint256" },
+    ],
+    name: "changeClaimAndVestingStartTime",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint8", name: "potNumber", type: "uint8" },
+      { internalType: "bytes32", name: "merkleRoot_", type: "bytes32" },
+    ],
+    name: "changePotMerkleRoot",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint8", name: "potNumber", type: "uint8" },
+      { internalType: "uint256", name: "newTokenRewards", type: "uint256" },
+      { internalType: "uint256", name: "newClaimPeriod", type: "uint256" },
+    ],
+    name: "changePotTokenRewardsAndClaimPeriod",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "newContractAddress", type: "address" },
+    ],
+    name: "changeTokenContractAddress",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "newContractAddress", type: "address" },
+    ],
+    name: "changeVestingContractAddress",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint8", name: "unlockedPercentageTGE_", type: "uint8" },
+      { internalType: "uint256", name: "vestingStart_", type: "uint256" },
+      { internalType: "uint256", name: "vestingCliff_", type: "uint256" },
+      { internalType: "uint256", name: "vestingDuration_", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "vestingSlicePeriodSeconds_",
+        type: "uint256",
+      },
+    ],
+    name: "changeVestingSchedule",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "claimStartTime",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32[]",
+        name: "pot1MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot2MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot3MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot4MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot5MerkleProof_",
+        type: "bytes32[]",
+      },
+    ],
+    name: "claimToken",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllPotsClaimPeriods",
+    outputs: [
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllPotsMerkleRoot",
+    outputs: [
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllPotsTokenRewards",
+    outputs: [
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getContractTokenBalance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getCurrentTime",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getVestingSchedule",
+    outputs: [
+      { internalType: "uint8", name: "", type: "uint8" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "bytes32[]", name: "proof", type: "bytes32[]" },
+      { internalType: "bytes32", name: "root", type: "bytes32" },
+    ],
+    name: "isWhitelisted",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokenContractAddress",
+    outputs: [{ internalType: "contract IERC20", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "vestingContractAddress",
+    outputs: [
+      { internalType: "contract ITokenVestingFLYY", name: "", type: "address" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+    name: "withdrawContractTokenBalance",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 export const contract_abi_airdrop = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
