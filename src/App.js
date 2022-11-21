@@ -11,6 +11,8 @@ import {
   contract_abi_vesting,
   contract_address_merkel,
   contract_abi_merkel,
+  contract_main_abi,
+  contract_main_address,
   speedy_nodes,
 } from "./config.js";
 import { pot1, pot2, pot3, pot4, pot5 } from "./addresses";
@@ -32,6 +34,7 @@ function App() {
   //   }
   // }
   const [connected, setConnected] = useState(false);
+  const [contractMain, setContractMain] = useState();
   const [wladdress, setwladdress] = useState();
   const [vestingContract, setVestingContract] = useState();
   const [airdropContract, setAirdropContract] = useState();
@@ -57,8 +60,13 @@ function App() {
       contract_abi_merkel,
       contract_address_merkel
     );
+    const isMainContract = new web3.eth.Contract(
+      contract_main_abi,
+      contract_main_address
+    );
     setVestingContract(isVestingContract);
     setAirdropContract(isAirdropContract);
+    setContractMain(isMainContract);
     setweb3global(web3);
   };
 
@@ -75,8 +83,9 @@ function App() {
     };
     fun();
   }, []);
-
+  
   useEffect(() => {
+     getRewards()
     //connect_wallet();
     if (connected && web3Global != "" && vestingContract) {
       console.log("loaded web3");
@@ -164,6 +173,16 @@ function App() {
     }
   }
 
+  async function getRewards(){
+    // console.log(contractMain)
+    contractMain?.methods.getContractTokenBalance().call((err, result) => {
+      if (result != null) {
+        settotalrewards(result);
+      }
+      // console.log(totalrewards)
+    });
+  }
+
   async function fetch_data() {
     if (connected) {
       // const web3 = new Web3(Web3.givenProvider);
@@ -186,14 +205,6 @@ function App() {
           // console.log("error: " + err);
           // console.log(result);
           setpending(result);
-        });
-
-      vestingContract.methods
-        .getVestingSchedulesTotalAmount()
-        .call((err, result) => {
-          console.log("error: " + err);
-          console.log(result);
-          settotalrewards(result);
         });
     }
   }
