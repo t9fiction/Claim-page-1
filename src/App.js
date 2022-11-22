@@ -177,7 +177,9 @@ function App() {
     // console.log(contractMain)
     contractMain?.methods.getContractTokenBalance().call((err, result) => {
       if (result != null) {
-        settotalrewards(result);
+        let allRewards = 0.025 * result;
+        console.log(allRewards)
+        settotalrewards(allRewards);
       }
       // console.log(totalrewards)
     });
