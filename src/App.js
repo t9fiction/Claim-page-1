@@ -591,7 +591,7 @@ function App() {
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
                                 {totalrewards} <br />
-                                ($0)
+                                ($)
                               </p>
                               <img
                                 src="img/icons/token.png"
