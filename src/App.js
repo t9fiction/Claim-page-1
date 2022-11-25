@@ -309,7 +309,7 @@ function App() {
   }
 
   // Airdrop function
-  async function aridropClaim() {
+  async function airdropClaim() {
     if (connected) {
       const addresses = await web3Global.eth.getAccounts();
       const {
@@ -341,7 +341,7 @@ function App() {
             .claimToken(proof1, proof2, proof3, proof4, proof5)
             .send({
               from: address,
-              gas: 625000,
+              gas: 600000,
               maxPriorityFeePerGas: null,
               maxFeePerGas: null,
             });
