@@ -208,8 +208,8 @@ function App() {
         .call((err, result) => {
           // console.log("error: " + err);
           // console.log(result);
-          let pendingRds = result/(10**18)
-          setpending(pendingRds);
+          // let pendingRds = result/(10**18)
+          setpending(result);
         });
     }
   }
