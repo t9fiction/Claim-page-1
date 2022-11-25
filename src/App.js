@@ -199,7 +199,7 @@ function App() {
       // console.log("Default address: "+await web3.eth.defaultAccount)
       vestingContract.methods.balanceOf(address).call((err, result) => {
         // let abc = 45000 * (10 **18)
-        const etherValue = result/(10**18)
+        let etherValue = result/(10**18)
         setbalance(etherValue);
       });
 
