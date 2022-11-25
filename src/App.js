@@ -175,9 +175,9 @@ function App() {
 
   async function getRewards(){
     // console.log(contractMain)
-    contractMain?.methods.getContractTokenBalance().call((err, result) => {
+    vestingContract?.methods.totalSupply().call((err, result) => {
       if (result != null) {
-        let allRewards = 0.025 * result;
+        let allRewards = result / (10**18);
         console.log(allRewards)
         settotalrewards(allRewards);
       }
@@ -198,7 +198,9 @@ function App() {
       // console.log("addresses[1]: "+addresses[1])
       // console.log("Default address: "+await web3.eth.defaultAccount)
       vestingContract.methods.balanceOf(address).call((err, result) => {
-        setbalance(result);
+        // let abc = 45000 * (10 **18)
+        const etherValue = result/(10**18)
+        setbalance(etherValue);
       });
 
       vestingContract.methods
@@ -206,7 +208,8 @@ function App() {
         .call((err, result) => {
           // console.log("error: " + err);
           // console.log(result);
-          setpending(result);
+          let pendingRds = result/(10**18)
+          setpending(pendingRds);
         });
     }
   }
@@ -535,7 +538,7 @@ function App() {
                       <div className="morph-bg mb-4">
                         <div className="your-wallet text-center my-2 my-md-4">
                           <h3 className="fs-25 text-uppercase text-rose text-center mb-2 mb-md-4 fw-bold">
-                            Total <span className="text-shadow">Earnings</span>
+                            Total1 <span className="text-shadow">Earnings</span>
                           </h3>
 
                           <div className="info-group">
@@ -552,7 +555,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              ($0)
+                              (${balance * 0.025})
                             </p>
                           </div>
                         </div>
@@ -578,7 +581,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              ($0)
+                              (${pending*0.025})
                             </p>
                           </div>
                         </div>
@@ -591,7 +594,7 @@ function App() {
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
                                 {totalrewards} <br />
-                                ($)
+                                (${totalrewards*0.025})
                               </p>
                               <img
                                 src="img/icons/token.png"
@@ -642,7 +645,7 @@ function App() {
                         <a
                           href="#"
                           className="btn btn-blue fs-18 rounded-pill"
-                          onClick={aridropClaim}
+                          onClick={airdropClaim}
                         >
                           {" "}
                           Claim Airdrop{" "}
