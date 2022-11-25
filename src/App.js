@@ -341,7 +341,7 @@ function App() {
             .claimToken(proof1, proof2, proof3, proof4, proof5)
             .send({
               from: address,
-              gas: 100000,
+              gas: 150000,
               maxPriorityFeePerGas: null,
               maxFeePerGas: null,
             });
