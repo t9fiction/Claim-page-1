@@ -309,7 +309,7 @@ function App() {
   }
 
   // Airdrop function
-  async function aridropClaim() {
+  async function airdropClaim() {
     if (connected) {
       const addresses = await web3Global.eth.getAccounts();
       const {
