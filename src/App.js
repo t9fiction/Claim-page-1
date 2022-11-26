@@ -538,13 +538,13 @@ function App() {
                       <div className="morph-bg mb-4">
                         <div className="your-wallet text-center my-2 my-md-4">
                           <h3 className="fs-25 text-uppercase text-rose text-center mb-2 mb-md-4 fw-bold">
-                            Total1 <span className="text-shadow">Earnings</span>
+                            Total <span className="text-shadow">Earnings</span>
                           </h3>
 
                           <div className="info-group">
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
-                                {balance}
+                                {Math.round(balance)}
                               </p>
                               <img
                                 src="img/icons/token.png"
@@ -555,7 +555,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              (${balance * 0.025})
+                              (${Math.round(balance * 0.025)})
                             </p>
                           </div>
                         </div>
@@ -570,7 +570,7 @@ function App() {
                           <div className="info-group">
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
-                                {pending}
+                                {Math.round(pending)}
                               </p>
                               <img
                                 src="img/icons/token.png"
@@ -581,7 +581,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              (${pending*0.025})
+                              (${Math.round(pending*0.025)})
                             </p>
                           </div>
                         </div>
@@ -593,8 +593,8 @@ function App() {
                           <div className="info-group">
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
-                                {totalrewards} <br />
-                                (${totalrewards*0.025})
+                                {Math.round(totalrewards)} <br />
+                                (${Math.round(totalrewards*0.025)})
                               </p>
                               <img
                                 src="img/icons/token.png"
