@@ -216,7 +216,7 @@ function App() {
           // console.log("error: " + err);
           // console.log(result);
           // let pendingRds = result/(10**18)
-          setpending(result);
+          setpending(Number(result));
         });
     }
   }
