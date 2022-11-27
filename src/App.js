@@ -210,9 +210,9 @@ function App() {
       // console.log("addresses[1]: "+addresses[1])
       // console.log("Default address: "+await web3.eth.defaultAccount)
       vestingContract.methods.balanceOf(address).call((err, result) => {
-        // let abc = 45000 * (10 **18)
-        let etherValue = result/(10**18)
-        setbalance(etherValue);
+        // let etherValue = result/(10**18);
+        let etherValue = web3Global.utils.fromWei(result, 'ether');
+        setbalance(Number(etherValue));
       });
 
       vestingContract.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
