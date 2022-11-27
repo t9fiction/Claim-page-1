@@ -214,9 +214,9 @@ function App() {
         .getVestingSchedulesCountByBeneficiary(address)
         .call((err, result) => {
           // console.log("error: " + err);
-          // console.log(result);
+          console.log(result);
           // let pendingRds = result/(10**18)
-          setpending(Number(result));
+          setpending(result);
         });
     }
   }
