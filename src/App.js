@@ -205,7 +205,7 @@ function App() {
       });
 
       vestingContract.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
-        setVestingValue(result);
+        setVestingValue(result/(10**18));
       });
 
       vestingContract.methods
@@ -586,7 +586,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              (${vestingValue})
+                              (${vestingValue.toFixed(2)})
                             </p>
                           </div>
                         </div>
