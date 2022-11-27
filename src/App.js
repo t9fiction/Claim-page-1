@@ -187,15 +187,15 @@ function App() {
   }
 
   //disconnect function
-  const loadDisconnect = async () => {
-    // Chain Disconnect
-    // window.ethereum.on("disconnect", async () => {
-    window.localStorage.clear();
-    setIsModal(false);
-    setweb3global("");
-    // console.log("chain changed : ");
-    // });
-  };
+  // const loadDisconnect = async () => {
+  //   // Chain Disconnect
+  //   // window.ethereum.on("disconnect", async () => {
+  //   window.localStorage.clear();
+  //   setIsModal(false);
+  //   setweb3global("");
+  //   // console.log("chain changed : ");
+  //   // });
+  // };
 
   async function fetch_data() {
     if (connected) {
@@ -474,7 +474,7 @@ function App() {
                         Whitepaper
                       </a>
                     </li>
-                    {connected && (
+                    {/* {connected && (
                         <button
                           type="button"
                           onClick={loadDisconnect}
@@ -482,7 +482,7 @@ function App() {
                         >
                           Disconnect
                         </button>
-                      )}
+                      )} */}
                     <li className="nav-item">
                       <a className="nav-link" href="index.html#roadmap">
                         Roadmap
