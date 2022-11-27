@@ -206,9 +206,9 @@ function App() {
         if(err){
           setVestingValue(0)
         }else{
-          console.log(result)
+          // console.log(result)
           let etherValueVesting = web3Global.utils.fromWei(result, 'ether');
-          console.log(etherValueVesting)
+          // console.log(etherValueVesting)
           setVestingValue(Number(etherValueVesting));
         }
       });
