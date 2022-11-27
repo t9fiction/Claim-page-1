@@ -186,17 +186,6 @@ function App() {
     });
   }
 
-  //disconnect function
-  // const loadDisconnect = async () => {
-  //   // Chain Disconnect
-  //   // window.ethereum.on("disconnect", async () => {
-  //   window.localStorage.clear();
-  //   setIsModal(false);
-  //   setweb3global("");
-  //   // console.log("chain changed : ");
-  //   // });
-  // };
-
   async function fetch_data() {
     if (connected) {
       // const web3 = new Web3(Web3.givenProvider);
@@ -474,15 +463,6 @@ function App() {
                         Whitepaper
                       </a>
                     </li>
-                    {/* {connected && (
-                        <button
-                          type="button"
-                          onClick={loadDisconnect}
-                          className="btn-buy d-block text-uppercase btn btn-blue"
-                        >
-                          Disconnect
-                        </button>
-                      )} */}
                     <li className="nav-item">
                       <a className="nav-link" href="index.html#roadmap">
                         Roadmap
