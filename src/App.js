@@ -40,6 +40,7 @@ function App() {
   const [airdropContract, setAirdropContract] = useState();
   const [balance, setbalance] = useState(0);
   const [pending, setpending] = useState(0);
+  const [vestingValue, setVestingValue] = useState(0);
   const [totalrewards, settotalrewards] = useState(0);
   const [mintNumber, setMintNumber] = useState(1);
   const [totalsupply, settotalsupply] = useState(0);
@@ -201,6 +202,10 @@ function App() {
         // let abc = 45000 * (10 **18)
         let etherValue = result/(10**18)
         setbalance(etherValue);
+      });
+
+      vestingContract.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
+        setVestingValue(result);
       });
 
       vestingContract.methods
@@ -570,7 +575,7 @@ function App() {
                           <div className="info-group">
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
-                                {Math.round(pending)}
+                                {pending}
                               </p>
                               <img
                                 src="img/icons/token.png"
@@ -581,7 +586,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              (${Math.round(pending*0.025)})
+                              (${vestingValue})
                             </p>
                           </div>
                         </div>
