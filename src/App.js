@@ -155,7 +155,6 @@ function App() {
         }
       });
       setwladdress(address);
-      // console.log("Default address: " + address);
       fetch_data();
     }
   }
@@ -179,7 +178,6 @@ function App() {
     vestingContract?.methods.totalSupply().call((err, result) => {
       if (result != null) {
         let allRewards = result / (10**18);
-        console.log(allRewards)
         settotalrewards(allRewards);
       }
       // console.log(totalrewards)
@@ -199,20 +197,26 @@ function App() {
       // console.log("addresses[1]: "+addresses[1])
       // console.log("Default address: "+await web3.eth.defaultAccount)
       vestingContract.methods.balanceOf(address).call((err, result) => {
-        // let abc = 45000 * (10 **18)
-        let etherValue = result/(10**18)
-        setbalance(etherValue);
+        // let etherValue = result/(10**18);
+        let etherValue = web3Global.utils.fromWei(result, 'ether');
+        setbalance(Number(etherValue));
       });
 
-      vestingContract.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
-        setVestingValue(result/(10**18));
+      vestingContract?.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
+        if(err){
+          setVestingValue(0)
+        }else{
+          // console.log(result)
+          let etherValueVesting = web3Global.utils.fromWei(result, 'ether');
+          // console.log(etherValueVesting)
+          setVestingValue(Number(etherValueVesting));
+        }
       });
 
       vestingContract.methods
         .getVestingSchedulesCountByBeneficiary(address)
         .call((err, result) => {
           // console.log("error: " + err);
-          // console.log(result);
           // let pendingRds = result/(10**18)
           setpending(result);
         });
