@@ -564,7 +564,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              ($FLYY{Math.round(balance * 0.025)})
+                              ($FLYY {Math.round(balance * 0.025)})
                             </p>
                           </div>
                         </div>
@@ -590,7 +590,7 @@ function App() {
                               />
                             </div>
                             <p className="fs-22 text-info fw-bold text-center mb-0">
-                              ($FLYY{vestingValue.toFixed(2)})
+                              ($FLYY {vestingValue.toFixed(2)})
                             </p>
                           </div>
                         </div>
@@ -603,7 +603,7 @@ function App() {
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
                                 {Math.round(totalrewards)} <br />
-                                ($FLYY{Math.round(totalrewards*0.025)})
+                                ($FLYY {Math.round(totalrewards*0.025)})
                               </p>
                               <img
                                 src="img/icons/token.png"
