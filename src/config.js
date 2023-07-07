@@ -3,11 +3,13 @@ export const speedy_nodes =
   "https://mainnet.infura.io/v3/3ca1583421a74069b07075f209879afb";
 // export const contract_address = "0xefd3505a2ec51385705fd0268ea337a2ee5bca14";
 export const contract_address_vesting =
-  "0xE7FafeBd53Def137595aB6B7697D76F49b2073f6";
+  "0xDbD185b1dF18c4a69795041B4De4B5154957E6fF";
 export const contract_address_airdrop =
-  "0x3698746004A02b8Be32924091d88c93E12581e59";
+  "0xB91aC9d9D83aFD5F41EC1c3f1De2D57CAe30709D";
 export const contract_address_merkel =
   "0xB91aC9d9D83aFD5F41EC1c3f1De2D57CAe30709D";
+export const contract_main_address =
+  "0xdEF36a0653D4992c3614362553C446ce41488a46";
 export const contract_abi_merkel = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
@@ -306,18 +308,6 @@ export const contract_abi_airdrop = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: "uint8", name: "", type: "uint8" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-    ],
-    name: "VestingScheduleChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
       { indexed: false, internalType: "address", name: "", type: "address" },
       { indexed: false, internalType: "uint256", name: "", type: "uint256" },
     ],
@@ -325,11 +315,37 @@ export const contract_abi_airdrop = [
     type: "event",
   },
   {
+    inputs: [],
+    name: "allowedClaimCount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
-      { internalType: "uint256", name: "newClaimStartTime", type: "uint256" },
-      { internalType: "uint256", name: "newVestingStartTime", type: "uint256" },
+      { internalType: "uint256", name: "allowedClaimCount_", type: "uint256" },
+    ],
+    name: "changeAllowedClaimCount",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "claimStartTime_", type: "uint256" },
+      { internalType: "uint256", name: "vestingStart_", type: "uint256" },
     ],
     name: "changeClaimAndVestingStartTime",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint8", name: "potNumber", type: "uint8" },
+      { internalType: "bytes32", name: "merkleRoot_", type: "bytes32" },
+    ],
+    name: "changePotMerkleRoot",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "nonpayable",
     type: "function",
@@ -365,29 +381,19 @@ export const contract_abi_airdrop = [
   },
   {
     inputs: [
-      { internalType: "uint8", name: "_unlockedPercentageTGE", type: "uint8" },
-      { internalType: "uint256", name: "_vestingCliff", type: "uint256" },
-      { internalType: "uint256", name: "_vestingStart", type: "uint256" },
-      { internalType: "uint256", name: "_vestingDuration", type: "uint256" },
+      { internalType: "uint8", name: "unlockedPercentageTGE_", type: "uint8" },
+      { internalType: "uint256", name: "vestingStart_", type: "uint256" },
+      { internalType: "uint256", name: "vestingCliff_", type: "uint256" },
+      { internalType: "uint256", name: "vestingDuration_", type: "uint256" },
       {
         internalType: "uint256",
-        name: "_vestingSlicePeriodSeconds",
+        name: "vestingSlicePeriodSeconds_",
         type: "uint256",
       },
     ],
     name: "changeVestingSchedule",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "checkIsWhitelistedAndPotNumber",
-    outputs: [
-      { internalType: "bool", name: "", type: "bool" },
-      { internalType: "uint8", name: "", type: "uint8" },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -398,15 +404,34 @@ export const contract_abi_airdrop = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "bytes32[]",
+        name: "pot1MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot2MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot3MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot4MerkleProof_",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "pot5MerkleProof_",
+        type: "bytes32[]",
+      },
+    ],
     name: "claimToken",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "excludeFromWhitelist",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "nonpayable",
     type: "function",
@@ -420,6 +445,19 @@ export const contract_abi_airdrop = [
       { internalType: "uint256", name: "", type: "uint256" },
       { internalType: "uint256", name: "", type: "uint256" },
       { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllPotsMerkleRoot",
+    outputs: [
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
+      { internalType: "bytes32", name: "", type: "bytes32" },
     ],
     stateMutability: "view",
     type: "function",
@@ -467,11 +505,12 @@ export const contract_abi_airdrop = [
   {
     inputs: [
       { internalType: "address", name: "account", type: "address" },
-      { internalType: "uint8", name: "potNumber", type: "uint8" },
+      { internalType: "bytes32[]", name: "proof", type: "bytes32[]" },
+      { internalType: "bytes32", name: "root", type: "bytes32" },
     ],
-    name: "includeInWhitelist",
+    name: "isWhitelisted",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
+    stateMutability: "pure",
     type: "function",
   },
   {
@@ -525,6 +564,31 @@ export const contract_abi_vesting = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "spender",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "Approval",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: "address",
         name: "beneficiary",
@@ -538,6 +602,21 @@ export const contract_abi_vesting = [
       },
     ],
     name: "TokensReleased",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "from", type: "address" },
+      { indexed: true, internalType: "address", name: "to", type: "address" },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "Transfer",
     type: "event",
   },
   {
@@ -582,6 +661,26 @@ export const contract_abi_vesting = [
     ],
     name: "VestingScheduleCreated",
     type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "address", name: "spender", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "spender", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [{ internalType: "address", name: "account", type: "address" }],
@@ -779,19 +878,68 @@ export const contract_abi_vesting = [
     stateMutability: "view",
     type: "function",
   },
-];
-export const contract_main_address = "0x7e4Abd657ee633523D323fEe7D5a2d3F25f3a3Cb";
-export const contract_main_abi = [
+  {
+    inputs: [],
+    name: "totalWithdrawnTokenAmount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
   {
     inputs: [
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "sender", type: "address" },
+      { internalType: "address", name: "recipient", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "withdrawnBalanceOf",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+export const contract_main_abi = [
+  { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+  {
+    anonymous: false,
+    inputs: [
       {
+        indexed: true,
         internalType: "address",
-        name: "_vestingContractAddress",
+        name: "owner",
         type: "address",
       },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "spender",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    name: "Approval",
+    type: "event",
   },
   {
     anonymous: false,
@@ -815,153 +963,179 @@ export const contract_main_abi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-    ],
-    name: "PriceChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: "address", name: "", type: "address" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-    ],
-    name: "TokenSold",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: "uint8", name: "", type: "uint8" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "", type: "uint256" },
-    ],
-    name: "VestingScheduleChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: "bool", name: "flag", type: "bool" },
-    ],
-    name: "whitelistingSwitchTriggered",
-    type: "event",
-  },
-  { stateMutability: "payable", type: "fallback" },
-  {
-    inputs: [],
-    name: "buyToken",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "newContractAddress", type: "address" },
-    ],
-    name: "changeTokenContractAddress",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "newPrice", type: "uint256" }],
-    name: "changeTokenPrice",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "newContractAddress", type: "address" },
-    ],
-    name: "changeVestingContractAddress",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "uint8", name: "_unlockedPercentageTGE", type: "uint8" },
-      { internalType: "uint256", name: "_vestingCliff", type: "uint256" },
-      { internalType: "uint256", name: "_vestingStart", type: "uint256" },
-      { internalType: "uint256", name: "_vestingDuration", type: "uint256" },
       {
+        indexed: false,
         internalType: "uint256",
-        name: "_vestingSlicePeriodSeconds",
+        name: "tokensSwapped",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "ethReceived",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokensIntoLiqudity",
         type: "uint256",
       },
     ],
-    name: "changeVestingSchedule",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
+    name: "SwapAndLiquify",
+    type: "event",
   },
   {
-    inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "excludeFromWhitelist",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getContractEthBalance",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getContractTokenBalance",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getCurrentTime",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getLowerAndUpperPurchasingLimitInETH",
-    outputs: [
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint256", name: "", type: "uint256" },
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "bool", name: "enabled", type: "bool" },
     ],
+    name: "SwapAndLiquifyEnabledUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "from", type: "address" },
+      { indexed: true, internalType: "address", name: "to", type: "address" },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "Transfer",
+    type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "address", name: "spender", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [],
-    name: "getVestingSchedule",
-    outputs: [
-      { internalType: "uint8", name: "", type: "uint8" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint256", name: "", type: "uint256" },
+    inputs: [
+      { internalType: "address", name: "spender", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
+    name: "approve",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "autoLPFee",
+    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "includeInWhitelist",
+    name: "balanceOf",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "newWallet", type: "address" }],
+    name: "changeDevAndMarketingWallet",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "decimals",
+    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "spender", type: "address" },
+      { internalType: "uint256", name: "subtractedValue", type: "uint256" },
+    ],
+    name: "decreaseAllowance",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "devAndMarketingFee",
+    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "devAndMarketingWallet",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "excludeFromFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "excludeFromReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "includeInFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "includeInReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "spender", type: "address" },
+      { internalType: "uint256", name: "addedValue", type: "uint256" },
+    ],
+    name: "increaseAllowance",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [{ internalType: "address", name: "account", type: "address" }],
-    name: "isWhitelisted",
+    name: "isExcludedFromFee",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "isExcludedFromReward",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "name",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
     stateMutability: "view",
     type: "function",
   },
@@ -974,65 +1148,72 @@ export const contract_main_abi = [
   },
   {
     inputs: [],
+    name: "reflectionFee",
+    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "address", name: "accountAddress", type: "address" },
-    ],
-    name: "resetTokensPurchasedForAccount",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "newLowerLimitInWei", type: "uint256" },
-      { internalType: "uint256", name: "newUpperLimitInWei", type: "uint256" },
-    ],
-    name: "setLowerAndUpperPurchasingLimitInETH",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "newLimit", type: "uint256" }],
-    name: "setTotalPurchasingLimitTokenCount",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    inputs: [{ internalType: "bool", name: "_enabled", type: "bool" }],
+    name: "setSwapAndLiquifyEnabled",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [],
-    name: "tokenContractAddress",
-    outputs: [{ internalType: "contract IERC20", name: "", type: "address" }],
+    name: "swapAndLiquifyEnabled",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "tokenPriceInWei",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    name: "symbol",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      { internalType: "address", name: "accountAddress", type: "address" },
-    ],
-    name: "tokensPurchased",
+    inputs: [],
+    name: "totalReflectionsDistributed",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "totalPurchasingLimitTokenCount",
+    name: "totalSupply",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "recipient", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "sender", type: "address" },
+      { internalType: "address", name: "recipient", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1044,39 +1225,22 @@ export const contract_main_abi = [
   },
   {
     inputs: [],
-    name: "vestingContractAddress",
+    name: "uniswapV2Pair",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "uniswapV2Router",
     outputs: [
-      { internalType: "contract ITokenVestingFLYY", name: "", type: "address" },
+      {
+        internalType: "contract IUniswapV2Router02",
+        name: "",
+        type: "address",
+      },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "whitelistingSwitch",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "bool", name: "flag", type: "bool" }],
-    name: "whitelistingSwitchControl",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-    name: "withdrawContractTokenBalance",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "withdrawEthBalance",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
     type: "function",
   },
   { stateMutability: "payable", type: "receive" },
