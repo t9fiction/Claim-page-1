@@ -84,9 +84,9 @@ function App() {
     };
     fun();
   }, []);
-  
+
   useEffect(() => {
-     getRewards()
+    getRewards();
     //connect_wallet();
     if (connected && web3Global != "" && vestingContract) {
       console.log("loaded web3");
@@ -173,11 +173,11 @@ function App() {
     }
   }
 
-  async function getRewards(){
+  async function getRewards() {
     // console.log(contractMain)
     vestingContract?.methods.totalSupply().call((err, result) => {
       if (result != null) {
-        let allRewards = result / (10**18);
+        let allRewards = result / 10 ** 18;
         settotalrewards(allRewards);
       }
       // console.log(totalrewards)
@@ -198,20 +198,22 @@ function App() {
       // console.log("Default address: "+await web3.eth.defaultAccount)
       vestingContract.methods.balanceOf(address).call((err, result) => {
         // let etherValue = result/(10**18);
-        let etherValue = web3Global.utils.fromWei(result, 'ether');
+        let etherValue = web3Global.utils.fromWei(result, "ether");
         setbalance(Number(etherValue));
       });
 
-      vestingContract?.methods.computeAllReleasableAmountForBeneficiary(address).call((err, result) => {
-        if(err){
-          setVestingValue(0)
-        }else{
-          // console.log(result)
-          let etherValueVesting = web3Global.utils.fromWei(result, 'ether');
-          // console.log(etherValueVesting)
-          setVestingValue(Number(etherValueVesting));
-        }
-      });
+      vestingContract?.methods
+        .computeAllReleasableAmountForBeneficiary(address)
+        .call((err, result) => {
+          if (err) {
+            setVestingValue(0);
+          } else {
+            // console.log(result)
+            let etherValueVesting = web3Global.utils.fromWei(result, "ether");
+            // console.log(etherValueVesting)
+            setVestingValue(Number(etherValueVesting));
+          }
+        });
 
       vestingContract.methods
         .getVestingSchedulesCountByBeneficiary(address)
@@ -603,7 +605,7 @@ function App() {
                             <div className="group d-flex flex-row align-items-center justify-content-between mb-2 mb-md-4">
                               <p className="fs-20 text-light fw-bold text-center mb-0">
                                 {Math.round(totalrewards)} <br />
-                                (${Math.round(totalrewards*0.025)})
+                                (${Math.round(totalrewards * 0.025)})
                               </p>
                               <img
                                 src="img/icons/token.png"
@@ -620,7 +622,7 @@ function App() {
                         {connected ? (
                           <a
                             href="#"
-                            className="btn btn-blue fs-18 rounded-pill"
+                            className="btn btn-blue fs-18 rounded-pill w-60"
                           >
                             {" "}
                             Connected{" "}
@@ -629,7 +631,7 @@ function App() {
                           <a
                             onClick={connect_wallet}
                             href="#"
-                            className="btn btn-blue fs-18 rounded-pill"
+                            className="btn btn-blue fs-18 rounded-pill w-60"
                           >
                             {" "}
                             Connect Wallet{" "}
@@ -643,23 +645,40 @@ function App() {
                         />
                         <a
                           onClick={claim_manually}
-                          className="btn btn-blue fs-18 rounded-pill"
+                          className="btn btn-blue fs-18 rounded-pill w-60"
                         >
                           {" "}
-                          Claim Manually{" "}
+                          Claim Vesting{" "}
                         </a>
                       </div>
                       <br></br>
-                      <div className="connect-wallet text-center d-flex align-items-center justify-content-center">
+
+                      {/* ------------------------------- */}
+                      <div className="connect-wallet text-center d-flex align-items-center justify-content-center ">
                         <a
                           href="#"
-                          className="btn btn-blue fs-18 rounded-pill"
+                          className="btn btn-blue fs-18 rounded-pill w-60"
                           onClick={airdropClaim}
                         >
                           {" "}
                           Claim Airdrop{" "}
                         </a>
+                        <img
+                          className="mx-3"
+                          width={25}
+                          height={25}
+                          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOnN2Z2pzPSJodHRwOi8vc3ZnanMuY29tL3N2Z2pzIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeD0iMCIgeT0iMCIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMiA1MTIiIHhtbDpzcGFjZT0icHJlc2VydmUiIGNsYXNzPSIiPjxnPjxwYXRoIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZD0ibTUwMi42MjggMjc4LjYyNy0xMTMuMzc4IDExMy4zNzhjLTYuMjQ5IDYuMjQ5LTE0LjQzOCA5LjM3My0yMi42MjggOS4zNzNzLTE2LjM3OS0zLjEyNC0yMi42MjgtOS4zNzNjLTEyLjQ5Ni0xMi40OTctMTIuNDk2LTMyLjc1OCAwLTQ1LjI1NWw1OC43NTEtNTguNzVoLTM3MC43NDVjLTE3LjY3MyAwLTMyLTE0LjMyNy0zMi0zMnMxNC4zMjctMzIgMzItMzJoMzcwLjc0NWwtNTguNzUxLTU4Ljc1Yy0xMi40OTYtMTIuNDk3LTEyLjQ5Ni0zMi43NTggMC00NS4yNTUgMTIuNDk4LTEyLjQ5NyAzMi43NTgtMTIuNDk3IDQ1LjI1NiAwbDExMy4zNzggMTEzLjM3OGMxMi40OTYgMTIuNDk2IDEyLjQ5NiAzMi43NTggMCA0NS4yNTR6IiBmaWxsPSIjZmZmZmZmIiBkYXRhLW9yaWdpbmFsPSIjMDAwMDAwIj48L3BhdGg+PC9nPjwvc3ZnPg=="
+                        />
+                        <a
+                          href="#"
+                          className="btn btn-blue fs-18 rounded-pill w-60"
+                          onClick={airdropClaim}
+                        >
+                          {" "}
+                          Claim TGE{" "}
+                        </a>
                       </div>
+                      {/* ------------------------------- */}
                     </div>
                   </div>
                 </div>
