@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import Web3Modal from "web3modal";
 import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import swal from "sweetalert";
@@ -14,11 +13,30 @@ import {
   contract_main_abi,
   contract_main_address,
   speedy_nodes,
+  contract_address_airdrop,
+  contract_abi_airdrop,
+  contract_crowdsale_address,
+  contract_crowdsale_abi,
 } from "./config.js";
 import { pot1, pot2, pot3, pot4, pot5 } from "./addresses";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import { mainnet, useAccount, useConnect, useNetwork } from "wagmi";
+import { useWeb3Modal } from "@web3modal/react";
+import {
+  createWalletClient,
+  custom,
+  createPublicClient,
+  http,
+  formatEther,
+} from "viem";
+import Swal from "sweetalert2";
+
 function App() {
+  const { open, close } = useWeb3Modal();
+  const { address, isConnected } = useAccount();
+  const { connectors, error, isLoading, pendingConnector } = useConnect();
+  const { chain } = useNetwork();
   // const [unstaked_Ifmale, setunstaked_Ifmale] = useState([1, 2]);
   // const [show, setShow] = React.useState(false);
   // const [showClassText, setShowClassText] = React.useState("");
@@ -77,51 +95,70 @@ function App() {
     // sale_controller();
   };
 
+  //Public Client for reading contract
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  });
+
+  //WalletClient for write function of contract
+  const client = createWalletClient({
+    chain: mainnet,
+    transport: custom(window.ethereum),
+  });
+
   // First one time run
   useEffect(() => {
     const fun = async () => {
       await startFunction();
+      await getRewards();
     };
     fun();
   }, []);
 
+  // useEffect(() => {
+  //   getRewards();
+  //   //connect_wallet();
+  //   if (connected && web3Global !== "" && vestingContract) {
+  //     console.log("loaded web3");
+  //     fetch_data();
+  //     merkle_Pot();
+  //   }
+  // }, [web3Global, vestingContract, connected]);
+
+  //
   useEffect(() => {
-    getRewards();
-    //connect_wallet();
-    if (connected && web3Global != "" && vestingContract) {
-      console.log("loaded web3");
-      fetch_data();
-      merkle_Pot();
+    async function handleConnection() {
+      setwladdress(address);
+      await fetch_data();
+      await merkle_Pot();
+      // const isContract = getContract({
+      //   address: contract_address ,
+      //   abi: contract_abi,
+      // })
+      // console.log(isContract,"isContract")
+      // setContract(isContract);
     }
-  }, [web3Global, vestingContract, connected]);
+
+    if (isConnected) {
+      if (chain.id === 1) {
+        handleConnection();
+      } else {
+        swal.fire("Wrong Network Selected. Select Ethereum Mainnet");
+      }
+    }
+  }, [isConnected, chain, address]);
 
   async function connect_wallet() {
-    // if (Web3.givenProvider) {
+    try {
+      const result = await open();
+    } catch (error) {
+      console.error("Error connecting to provider:", error);
+    }
 
-    const web3Modal = new Web3Modal({
-      network: "mainnet", // optional
-      cacheProvider: true, // optional
-      providerOptions: {
-        walletconnect: {
-          package: WalletConnectProvider, // required
-          options: {
-            infuraId: "3ca1583421a74069b07075f209879afb", // required
-            // "17342b0f3f344d2d96c2c89c5fddc959", // required
-          },
-        },
-        coinbasewallet: {
-          package: CoinbaseWalletSDK, // Required
-          options: {
-            appName: "FlyGuyz", // Required
-            infuraId: "3ca1583421a74069b07075f209879afb", // Required
-            rpc: "", // Optional if `infuraId` is provided; otherwise it's required
-            chainId: 1, // Optional. It defaults to 1 if not provided
-            darkMode: false, // Optional. Use dark theme, defaults to false
-          },
-        },
-      },
-    });
-
+    /**
+   * 
+    
     const provider = await web3Modal.connect();
     if (!provider) {
       return {
@@ -157,11 +194,13 @@ function App() {
       setwladdress(address);
       fetch_data();
     }
+    */
   }
 
   async function show_error_alert(error) {
     let temp_error = error.message.toString();
     console.log(temp_error);
+    
     let error_list = ["HODLeR Shoes :: Not Yet Active."];
 
     for (let i = 0; i < error_list.length; i++) {
@@ -173,61 +212,70 @@ function App() {
     }
   }
 
-  async function getRewards() {
-    // console.log(contractMain)
-    vestingContract?.methods.totalSupply().call((err, result) => {
-      if (result != null) {
-        let allRewards = result / 10 ** 18;
-        settotalrewards(allRewards);
-      }
-      // console.log(totalrewards)
+  // GetRewards function converted
+  const getRewards = async () => {
+    const result = await publicClient.readContract({
+      address: contract_address_vesting,
+      abi: contract_abi_vesting,
+      functionName: "totalSupply",
     });
-  }
+    console.log(result, "result");
+
+    let allRewards = Number(result) / 10 ** 18;
+    settotalrewards(allRewards);
+    console.log(allRewards, "All Rewards");
+    // console.log(totalrewards)
+  };
 
   async function fetch_data() {
-    if (connected) {
-      // const web3 = new Web3(Web3.givenProvider);
-      // const web3 = new Web3(speedy_nodes);
-      // await Web3.givenProvider.enable();
-      // const contract = new web3.eth.Contract(contract_abi, contract_address);
-
-      const addresses = await web3Global.eth.getAccounts();
-      const address = addresses[0];
-      // console.log("addresses[0]: " + addresses[0]);
-      // console.log("addresses[1]: "+addresses[1])
-      // console.log("Default address: "+await web3.eth.defaultAccount)
-      vestingContract.methods.balanceOf(address).call((err, result) => {
-        // let etherValue = result/(10**18);
-        let etherValue = web3Global.utils.fromWei(result, "ether");
-        setbalance(Number(etherValue));
+    console.log("inside Fetch");
+    // ------------------------------------------------------------------------
+    const getBalanceOf = async () => {
+      const result = await publicClient.readContract({
+        address: contract_address_vesting,
+        abi: contract_abi_vesting,
+        functionName: "balanceOf",
+        args: [address],
       });
+      let etherValue = formatEther(result);
+      setbalance(Number(etherValue));
+    };
+    await getBalanceOf();
+    // ------------------------------------------------------------------------
 
-      vestingContract?.methods
-        .computeAllReleasableAmountForBeneficiary(address)
-        .call((err, result) => {
-          if (err) {
-            setVestingValue(0);
-          } else {
-            // console.log(result)
-            let etherValueVesting = web3Global.utils.fromWei(result, "ether");
-            // console.log(etherValueVesting)
-            setVestingValue(Number(etherValueVesting));
-          }
-        });
+    // ------------------------------------------------------------------------
+    const computeReleaseableForBeneficiary = async () => {
+      const result = await publicClient.readContract({
+        address: contract_address_vesting,
+        abi: contract_abi_vesting,
+        functionName: "computeAllReleasableAmountForBeneficiary",
+        args: [address],
+      });
+      console.log(result, "computeAllReleasableAmountForBeneficiary");
+      let etherValueVesting = formatEther(result);
+      console.log(etherValueVesting, "etherValueVesting");
+      setVestingValue(Number(etherValueVesting));
+    };
+    await computeReleaseableForBeneficiary();
+    // ------------------------------------------------------------------------
 
-      vestingContract.methods
-        .getVestingSchedulesCountByBeneficiary(address)
-        .call((err, result) => {
-          // console.log("error: " + err);
-          // let pendingRds = result/(10**18)
-          setpending(result);
-        });
-    }
+    // ------------------------------------------------------------------------
+    const getCountByBeneficiary = async () => {
+      const result = await publicClient.readContract({
+        address: contract_address_vesting,
+        abi: contract_abi_vesting,
+        functionName: "getVestingSchedulesCountByBeneficiary",
+        args: [address],
+      });
+      console.log(result, "computeAllReleasableAmountForBeneficiary");
+      setpending(Number(result));
+    };
+    await getCountByBeneficiary();
   }
 
   // Merkle tree
   async function merkle_Pot() {
-    if (connected) {
+    if (isConnected) {
       const addresses = await web3Global.eth.getAccounts();
       const address = addresses[0];
 
@@ -288,33 +336,35 @@ function App() {
   // end merkel tree
 
   async function claim_manually() {
-    if (connected) {
-      // const web3 = new Web3(Web3.givenProvider);
-      // await Web3.givenProvider.enable();
-      // const contract = new web3.eth.Contract(contract_abi, contract_address);
-      const addresses = await web3Global.eth.getAccounts();
-      const address = addresses[0];
-      // console.log("addresses[0]: " + addresses[0]);
-      // console.log("addresses[1]: "+addresses[1])
-      // console.log("Default address: "+await web3.eth.defaultAccount)
+    if (isConnected) {
       try {
-        const estemated_Gas = await vestingContract.methods
-          .claimFromAllVestings()
-          .send({
-            from: address,
-            maxPriorityFeePerGas: null,
-            maxFeePerGas: null,
-          });
+        const { request } = await publicClient.simulateContract({
+          account: address,
+          address: contract_address_vesting,
+          abi: contract_abi_vesting,
+          functionName: "claimFromAllVestings",
+        });
+        console.log(request, "request");
+        await client.writeContract(request);
+        // try {
+        //   const estemated_Gas = await vestingContract.methods
+        //     .claimFromAllVestings()
+        //     .send({
+        //       from: address,
+        //       maxPriorityFeePerGas: null,
+        //       maxFeePerGas: null,
+        //     });
 
-        const result = await vestingContract.methods
-          .claimFromAllVestings()
-          .send({
-            from: address,
-            gas: estemated_Gas,
-            maxPriorityFeePerGas: null,
-            maxFeePerGas: null,
-          });
+        //   const result = await vestingContract.methods
+        //     .claimFromAllVestings()
+        //     .send({
+        //       from: address,
+        //       gas: estemated_Gas,
+        //       maxPriorityFeePerGas: null,
+        //       maxFeePerGas: null,
+        //     });
       } catch (error) {
+        console.log(error)
         show_error_alert(error);
       }
     } else {
@@ -324,8 +374,8 @@ function App() {
 
   // Airdrop function
   async function airdropClaim() {
-    if (connected) {
-      const addresses = await web3Global.eth.getAccounts();
+    if (isConnected) {
+      // const addresses = await web3Global.eth.getAccounts();
       const {
         proof1,
         proof2,
@@ -338,7 +388,6 @@ function App() {
         verification4,
         verification5,
       } = await merkle_Pot();
-      const address = addresses[0];
       // console.log("addresses[0]: " + addresses[0]);
 
       console.log("Airdrop Contract : ", airdropContract);
@@ -351,14 +400,25 @@ function App() {
           verification4 ||
           verification5
         ) {
-          const result = await airdropContract.methods
-            .claimToken(proof1, proof2, proof3, proof4, proof5)
-            .send({
-              from: address,
-              gas: 600000,
-              maxPriorityFeePerGas: null,
-              maxFeePerGas: null,
-            });
+          const { request } = await publicClient.claimToken({
+            account: address,
+            address: contract_address_airdrop,
+            abi: contract_abi_airdrop,
+            functionName: "claimToken",
+            args: [proof1, proof2, proof3, proof4, proof5],
+          });
+          console.log(request, "request");
+          await client.writeContract(request);
+
+          // const result = await airdropContract.methods
+          //   .claimToken(proof1, proof2, proof3, proof4, proof5)
+          //   .send({
+          //     from: address,
+          //     gas: 600000,
+          //     maxPriorityFeePerGas: null,
+          //     maxFeePerGas: null,
+          //   });
+
         } else {
           swal("Your address is not whitelisted");
         }
@@ -367,6 +427,28 @@ function App() {
       }
     } else {
       alert("Please connect wallet first");
+    }
+  }
+
+  // ClaimTGE function
+  async function claimTGE() {
+    if (isConnected) {
+      try {
+        console.log("claimTGE function")
+        const { request } = await publicClient.simulateContract({
+          account: address,
+          address: contract_crowdsale_address,
+          abi: contract_crowdsale_abi,
+          functionName: "claimTGE",
+        });
+        console.log(request, "request");
+        await client.writeContract(request);
+      } catch (error) {
+        console.log(error)
+        show_error_alert(error);
+      }
+    } else {
+      swal("Please connect wallet first");
     }
   }
 
@@ -619,7 +701,7 @@ function App() {
                         </div>
                       </div>
                       <div className="connect-wallet text-center d-flex align-items-center justify-content-center">
-                        {connected ? (
+                        {isConnected ? (
                           <a
                             href="#"
                             className="btn btn-blue fs-18 rounded-pill w-60"
@@ -672,7 +754,7 @@ function App() {
                         <a
                           href="#"
                           className="btn btn-blue fs-18 rounded-pill w-60"
-                          onClick={airdropClaim}
+                          onClick={claimTGE}
                         >
                           {" "}
                           Claim TGE{" "}
