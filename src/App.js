@@ -102,10 +102,10 @@ function App() {
   });
 
   //WalletClient for write function of contract
-  const client = createWalletClient({
-    chain: mainnet,
-    transport: custom(window.ethereum),
-  });
+  // const client = createWalletClient({
+  //   chain: mainnet,
+  //   transport: custom(window.ethereum),
+  // });
 
   // First one time run
   useEffect(() => {
