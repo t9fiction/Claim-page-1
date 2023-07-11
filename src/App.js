@@ -117,7 +117,11 @@ function App() {
   useEffect(() => {
     const fun = async () => {
       await startFunction();
-      await getRewards();
+      if (chain.id === 1){
+        await getRewards();
+      }else {
+        swal.fire("Wrong Network Selected. Select Ethereum Mainnet");
+      }
     };
     fun();
   }, []);
