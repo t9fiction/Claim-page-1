@@ -56,6 +56,7 @@ function App() {
   const [wladdress, setwladdress] = useState();
   const [vestingContract, setVestingContract] = useState();
   const [airdropContract, setAirdropContract] = useState();
+  const [crowdSaleContract, setContractCrowdSale] = useState();
   const [balance, setbalance] = useState(0);
   const [pending, setpending] = useState(0);
   const [vestingValue, setVestingValue] = useState(0);
@@ -79,6 +80,10 @@ function App() {
       contract_abi_merkel,
       contract_address_merkel
     );
+    const isCrowdSaleContract = new web3.eth.Contract(
+      contract_crowdsale_abi,
+      contract_crowdsale_address
+    );
     const isMainContract = new web3.eth.Contract(
       contract_main_abi,
       contract_main_address
@@ -86,6 +91,7 @@ function App() {
     setVestingContract(isVestingContract);
     setAirdropContract(isAirdropContract);
     setContractMain(isMainContract);
+    setContractCrowdSale(isCrowdSaleContract);
     setweb3global(web3);
   };
 
@@ -400,24 +406,24 @@ function App() {
           verification4 ||
           verification5
         ) {
-          const { request } = await publicClient.claimToken({
-            account: address,
-            address: contract_address_airdrop,
-            abi: contract_abi_airdrop,
-            functionName: "claimToken",
-            args: [proof1, proof2, proof3, proof4, proof5],
-          });
-          console.log(request, "request");
+          // const { request } = await publicClient.claimToken({
+          //   account: address,
+          //   address: contract_address_airdrop,
+          //   abi: contract_abi_airdrop,
+          //   functionName: "claimToken",
+          //   args: [proof1, proof2, proof3, proof4, proof5],
+          // });
+          // console.log(request, "request");
           // await client.writeContract(request);
 
-          // const result = await airdropContract.methods
-          //   .claimToken(proof1, proof2, proof3, proof4, proof5)
-          //   .send({
-          //     from: address,
-          //     gas: 600000,
-          //     maxPriorityFeePerGas: null,
-          //     maxFeePerGas: null,
-          //   });
+          const result = await airdropContract.methods
+            .claimToken(proof1, proof2, proof3, proof4, proof5)
+            .send({
+              from: address,
+              gas: 600000,
+              maxPriorityFeePerGas: null,
+              maxFeePerGas: null,
+            });
 
         } else {
           swal("Your address is not whitelisted");
@@ -434,14 +440,32 @@ function App() {
   async function claimTGE() {
     if (isConnected) {
       try {
-        console.log("claimTGE function")
-        const { request } = await publicClient.simulateContract({
-          account: address,
-          address: contract_crowdsale_address,
-          abi: contract_crowdsale_abi,
-          functionName: "claimTGE",
-        });
-        console.log(request, "request");
+        // const { request } = await publicClient.claimTGE({
+        //   account: address,
+        //   address: contract_address_airdrop,
+        //   abi: contract_abi_airdrop,
+        //   functionName: "claimToken",
+        //   args: [proof1, proof2, proof3, proof4, proof5],
+        // });
+        // console.log(request, "request");
+        // await client.writeContract(request);
+
+        const result = await crowdSaleContract.methods
+          .claimTGE()
+          .send({
+            from: address,
+            gas: 600000,
+            maxPriorityFeePerGas: null,
+            maxFeePerGas: null,
+          });
+
+        // const { request } = await publicClient.simulateContract({
+        //   account: address,
+        //   address: contract_crowdsale_address,
+        //   abi: contract_crowdsale_abi,
+        //   functionName: "claimTGE",
+        // });
+        // console.log(request, "request");
         // await client.writeContract(request);
       } catch (error) {
         console.log(error)
