@@ -102,10 +102,10 @@ function App() {
   });
 
   //WalletClient for write function of contract
-  const client = createWalletClient({
-    chain: mainnet,
-    transport: custom(window.ethereum),
-  });
+  // const client = createWalletClient({
+  //   chain: mainnet,
+  //   transport: custom(window.ethereum),
+  // });
 
   // First one time run
   useEffect(() => {
@@ -345,7 +345,7 @@ function App() {
           functionName: "claimFromAllVestings",
         });
         console.log(request, "request");
-        await client.writeContract(request);
+        // await client.writeContract(request);
         // try {
         //   const estemated_Gas = await vestingContract.methods
         //     .claimFromAllVestings()
@@ -408,7 +408,7 @@ function App() {
             args: [proof1, proof2, proof3, proof4, proof5],
           });
           console.log(request, "request");
-          await client.writeContract(request);
+          // await client.writeContract(request);
 
           // const result = await airdropContract.methods
           //   .claimToken(proof1, proof2, proof3, proof4, proof5)
@@ -442,7 +442,7 @@ function App() {
           functionName: "claimTGE",
         });
         console.log(request, "request");
-        await client.writeContract(request);
+        // await client.writeContract(request);
       } catch (error) {
         console.log(error)
         show_error_alert(error);
