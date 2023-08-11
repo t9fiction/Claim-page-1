@@ -1,5 +1,10 @@
 import React from 'react';
-import { contract_crowdsale_address, contract_crowdsale_abi } from '../config';
+import {
+  contract_crowdsale_address,
+  contract_crowdsale_abi,
+  contract_address_vesting,
+  contract_abi_vesting,
+} from '../config';
 import { useAccount, useContractWrite } from 'wagmi';
 import {
   BaseError,
@@ -10,13 +15,13 @@ import {
 } from 'viem';
 import swal from 'sweetalert2';
 
-export default function useCall() {
+export default function useCallManual() {
   const { address, isConnected } = useAccount();
-  console.log("insided TGE")
+  console.log('insided TGE');
   const { writeAsync } = useContractWrite({
-    address: contract_crowdsale_address,
-    abi: contract_crowdsale_abi,
-    functionName: 'claimTGE',
+    address: contract_address_vesting,
+    abi: contract_abi_vesting,
+    functionName: 'claimFromAllVestings',
     account: address,
     // value: parseEther(valueinString),
   });
@@ -26,7 +31,7 @@ export default function useCall() {
       const writeResult = await writeAsync();
       console.info('contract call successs', writeResult);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       if (err instanceof BaseError) {
         const isInsufficientFundsError =
           err.walk((e) => e instanceof InsufficientFundsError) instanceof
@@ -39,7 +44,7 @@ export default function useCall() {
         //   //   (err) => err instanceof ContractFunctionExecutionError
         //   // );
         if (isInsufficientFundsError) {
-          swal.fire('Not enough balance');
+          swal('Not enough balance');
         }
         //   if (isUserRejectedRequestError) {
         //     alert(isInsufficientFundsError,"isUserRejecte");
@@ -55,10 +60,10 @@ export default function useCall() {
         }
         if (
           err.message.includes(
-            'TokenCrowdsaleFLYY: no TGE balance exists for the caller'
+            'TokenVestingFLYY: INVALID Beneficiary Address!'
           )
         ) {
-          swal.fire('No balance exist for the User');
+          swal.fire('No Vesting schedule exist for the user');
         }
         console.log(err);
       }

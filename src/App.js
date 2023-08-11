@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import Web3 from "web3";
-import keccak256 from "keccak256";
-import { MerkleTree } from "merkletreejs";
-import swal from "sweetalert";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
+import React, { useEffect, useState } from 'react';
+import Web3 from 'web3';
+import keccak256 from 'keccak256';
+import { MerkleTree } from 'merkletreejs';
+import swal from 'sweetalert';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import {
   contract_address_vesting,
   contract_abi_vesting,
@@ -17,21 +17,28 @@ import {
   contract_abi_airdrop,
   contract_crowdsale_address,
   contract_crowdsale_abi,
-} from "./config.js";
-import { pot1, pot2, pot3, pot4, pot5 } from "./addresses";
-import Popup from "reactjs-popup";
-import "reactjs-popup/dist/index.css";
-import { mainnet, useAccount, useConnect, useNetwork } from "wagmi";
-import { useWeb3Modal } from "@web3modal/react";
+} from './config.js';
+import { pot1, pot2, pot3, pot4, pot5 } from './addresses';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import {
+  mainnet,
+  useAccount,
+  useConnect,
+  useContractWrite,
+  useNetwork,
+} from 'wagmi';
+import { useWeb3Modal } from '@web3modal/react';
 import {
   createWalletClient,
   custom,
   createPublicClient,
   http,
   formatEther,
-} from "viem";
-import Swal from "sweetalert2";
+} from 'viem';
+import Swal from 'sweetalert2';
 import useCall from './components/useCall.js';
+import useCallManual from './components/useCallManual.js';
 
 function App() {
   const { open, close } = useWeb3Modal();
@@ -68,7 +75,7 @@ function App() {
   const [web3Global, setweb3global] = useState();
   const [isModal, setIsModal] = useState(false);
 
-  const [walletstatus, set_walletstatus] = useState("Connect Wallet");
+  const [walletstatus, set_walletstatus] = useState('Connect Wallet');
 
   const startFunction = async () => {
     // await loadDisconnect()
@@ -109,6 +116,16 @@ function App() {
   });
 
   const callTGE = useCall();
+
+  const callManual = useCallManual()
+
+  const { writeAsync } = useContractWrite({
+    address: contract_address_vesting,
+    abi: contract_abi_vesting,
+    functionName: 'claimFromAllVestings',
+    account: address,
+  });
+
   //WalletClient for write function of contract
   // const client = createWalletClient({
   //   chain: mainnet,
@@ -119,10 +136,10 @@ function App() {
   useEffect(() => {
     const fun = async () => {
       await startFunction();
-      if (chain.id === 1){
+      if (chain.id === 1) {
         await getRewards();
-      }else {
-        swal.fire("Wrong Network Selected. Select Ethereum Mainnet");
+      } else {
+        swal.fire('Wrong Network Selected. Select Ethereum Mainnet');
       }
     };
     fun();
@@ -156,7 +173,7 @@ function App() {
       if (chain.id === 1) {
         handleConnection();
       } else {
-        swal("Wrong Network Selected. Select Ethereum Mainnet");
+        swal('Wrong Network Selected. Select Ethereum Mainnet');
       }
     }
   }, [isConnected, chain, address]);
@@ -165,7 +182,7 @@ function App() {
     try {
       const result = await open();
     } catch (error) {
-      console.error("Error connecting to provider:", error);
+      console.error('Error connecting to provider:', error);
     }
 
     /**
@@ -212,14 +229,14 @@ function App() {
   async function show_error_alert(error) {
     let temp_error = error.message.toString();
     console.log(temp_error);
-    
-    let error_list = ["HODLeR Shoes :: Not Yet Active."];
+
+    let error_list = ['HODLeR Shoes :: Not Yet Active.'];
 
     for (let i = 0; i < error_list.length; i++) {
       if (temp_error.includes(error_list[i])) {
         // set ("Transcation Failed")
         // alert(error_list[i]);
-        swal("Alert!", error_list[i], "warning");
+        swal('Alert!', error_list[i], 'warning');
       }
     }
   }
@@ -229,24 +246,24 @@ function App() {
     const result = await publicClient.readContract({
       address: contract_address_vesting,
       abi: contract_abi_vesting,
-      functionName: "totalSupply",
+      functionName: 'totalSupply',
     });
-    console.log(result, "result");
+    console.log(result, 'result');
 
     let allRewards = Number(result) / 10 ** 18;
     settotalrewards(allRewards);
-    console.log(allRewards, "All Rewards");
+    console.log(allRewards, 'All Rewards');
     // console.log(totalrewards)
   };
 
   async function fetch_data() {
-    console.log("inside Fetch");
+    console.log('inside Fetch');
     // ------------------------------------------------------------------------
     const getBalanceOf = async () => {
       const result = await publicClient.readContract({
         address: contract_address_vesting,
         abi: contract_abi_vesting,
-        functionName: "balanceOf",
+        functionName: 'balanceOf',
         args: [address],
       });
       let etherValue = formatEther(result);
@@ -260,12 +277,12 @@ function App() {
       const result = await publicClient.readContract({
         address: contract_address_vesting,
         abi: contract_abi_vesting,
-        functionName: "computeAllReleasableAmountForBeneficiary",
+        functionName: 'computeAllReleasableAmountForBeneficiary',
         args: [address],
       });
-      console.log(result, "computeAllReleasableAmountForBeneficiary");
+      console.log(result, 'computeAllReleasableAmountForBeneficiary');
       let etherValueVesting = formatEther(result);
-      console.log(etherValueVesting, "etherValueVesting");
+      console.log(etherValueVesting, 'etherValueVesting');
       setVestingValue(Number(etherValueVesting));
     };
     await computeReleaseableForBeneficiary();
@@ -276,10 +293,10 @@ function App() {
       const result = await publicClient.readContract({
         address: contract_address_vesting,
         abi: contract_abi_vesting,
-        functionName: "getVestingSchedulesCountByBeneficiary",
+        functionName: 'getVestingSchedulesCountByBeneficiary',
         args: [address],
       });
-      console.log(result, "computeAllReleasableAmountForBeneficiary");
+      console.log(result, 'computeAllReleasableAmountForBeneficiary');
       setpending(Number(result));
     };
     await getCountByBeneficiary();
@@ -291,7 +308,7 @@ function App() {
       const addresses = await web3Global.eth.getAccounts();
       const address = addresses[0];
 
-      const buf2hex = (x) => "0x" + x.toString("hex");
+      const buf2hex = (x) => '0x' + x.toString('hex');
 
       const leaves1 = pot1.map((x) => keccak256(x));
       const leaves2 = pot2.map((x) => keccak256(x));
@@ -319,11 +336,11 @@ function App() {
       const proof4 = tree4.getProof(leaf).map((x) => buf2hex(x.data));
       const proof5 = tree5.getProof(leaf).map((x) => buf2hex(x.data));
 
-      console.log("root1", root1);
-      console.log("root2", root2);
-      console.log("root3", root3);
-      console.log("root4", root4);
-      console.log("root5", root5);
+      console.log('root1', root1);
+      console.log('root2', root2);
+      console.log('root3', root3);
+      console.log('root4', root4);
+      console.log('root5', root5);
 
       const verification1 = tree1.verify(proof1, leaf, root1);
       const verification2 = tree2.verify(proof2, leaf, root2);
@@ -347,16 +364,20 @@ function App() {
   }
   // end merkel tree
 
+  
   async function claim_manually() {
     if (isConnected) {
       try {
-        const { request } = await publicClient.simulateContract({
-          account: address,
-          address: contract_address_vesting,
-          abi: contract_abi_vesting,
-          functionName: "claimFromAllVestings",
-        });
-        console.log(request, "request");
+        // const writeResult = await writeAsync();
+        console.log("inside Claim Manually")
+        await callManual()
+        // const { request } = await publicClient.simulateContract({
+        //   account: address,
+        //   address: contract_address_vesting,
+        //   abi: contract_abi_vesting,
+        //   functionName: 'claimFromAllVestings',
+        // });
+        // console.log(request, 'request');
         // await client.writeContract(request);
         // try {
         //   const estemated_Gas = await vestingContract.methods
@@ -376,11 +397,11 @@ function App() {
         //       maxFeePerGas: null,
         //     });
       } catch (error) {
-        console.log(error)
+        console.log(error);
         show_error_alert(error);
       }
     } else {
-      swal("Please connect wallet first");
+      swal('Please connect wallet first');
     }
   }
 
@@ -402,7 +423,7 @@ function App() {
       } = await merkle_Pot();
       // console.log("addresses[0]: " + addresses[0]);
 
-      console.log("Airdrop Contract : ", airdropContract);
+      console.log('Airdrop Contract : ', airdropContract);
 
       try {
         if (
@@ -430,15 +451,14 @@ function App() {
               maxPriorityFeePerGas: null,
               maxFeePerGas: null,
             });
-
         } else {
-          swal("Your address is not whitelisted");
+          swal('Your address is not whitelisted');
         }
       } catch (error) {
         show_error_alert(error);
       }
     } else {
-      alert("Please connect wallet first");
+      alert('Please connect wallet first');
     }
   }
 
@@ -446,7 +466,7 @@ function App() {
   async function claimTGE() {
     if (isConnected) {
       try {
-        console.log("claimTGE function")
+        console.log('claimTGE function');
         // const { request } = await publicClient.simulateContract({
         //   account: address,
         //   address: contract_crowdsale_address,
@@ -454,14 +474,14 @@ function App() {
         //   functionName: "claimTGE",
         // });
         // console.log(request, "request");
-        await callTGE()
+        await callTGE();
         // await client.writeContract(request);
       } catch (error) {
-        console.log(error)
+        console.log(error);
         show_error_alert(error);
       }
     } else {
-      swal("Please connect wallet first");
+      swal('Please connect wallet first');
     }
   }
 
@@ -611,7 +631,7 @@ function App() {
                     <div className="size-wrap">
                       <div className="main-heading">
                         <h1 className="fs-50 text-uppercase text-rose text-center mb-2 mb-md-4 fw-bold">
-                          Dash<span className="text-shadow">board</span>{" "}
+                          Dash<span className="text-shadow">board</span>{' '}
                         </h1>
                         <p className="fs-15 text-light fw-normal text-center mb-4">
                           Enter your wallet address to view your current, total
@@ -670,7 +690,7 @@ function App() {
                       <div className="morph-bg mb-4">
                         <div className="pending-rewards text-center my-2 my-md-4">
                           <h3 className="fs-25 text-uppercase text-rose text-center mb-2 mb-md-4 fw-bold">
-                            YOUR PENDING{" "}
+                            YOUR PENDING{' '}
                             <span className="text-shadow">REWARDS</span>
                           </h3>
                           <div className="info-group">
@@ -693,7 +713,7 @@ function App() {
                         </div>
                         <div className="total-rewards mb-4">
                           <h3 className="fs-25 text-uppercase text-rose text-center mb-2 mb-md-4 fw-bold">
-                            TOTAL REWARDS DISTRIBUTED{" "}
+                            TOTAL REWARDS DISTRIBUTED{' '}
                             <span className="text-shadow">TO HOLDERS</span>
                           </h3>
                           <div className="info-group">
@@ -719,8 +739,8 @@ function App() {
                             href="#"
                             className="btn btn-blue fs-18 rounded-pill w-60"
                           >
-                            {" "}
-                            Connected{" "}
+                            {' '}
+                            Connected{' '}
                           </a>
                         ) : (
                           <a
@@ -728,8 +748,8 @@ function App() {
                             href="#"
                             className="btn btn-blue fs-18 rounded-pill w-60"
                           >
-                            {" "}
-                            Connect Wallet{" "}
+                            {' '}
+                            Connect Wallet{' '}
                           </a>
                         )}
                         <img
@@ -742,8 +762,8 @@ function App() {
                           onClick={claim_manually}
                           className="btn btn-blue fs-18 rounded-pill w-60"
                         >
-                          {" "}
-                          Claim Vesting{" "}
+                          {' '}
+                          Claim Vesting{' '}
                         </a>
                       </div>
                       <br></br>
@@ -755,8 +775,8 @@ function App() {
                           className="btn btn-blue fs-18 rounded-pill w-60"
                           onClick={airdropClaim}
                         >
-                          {" "}
-                          Claim Airdrop{" "}
+                          {' '}
+                          Claim Airdrop{' '}
                         </a>
                         <img
                           className="mx-3"
@@ -769,8 +789,8 @@ function App() {
                           className="btn btn-blue fs-18 rounded-pill w-60"
                           onClick={claimTGE}
                         >
-                          {" "}
-                          Claim TGE{" "}
+                          {' '}
+                          Claim TGE{' '}
                         </a>
                       </div>
                       {/* ------------------------------- */}
