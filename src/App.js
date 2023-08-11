@@ -57,6 +57,7 @@ function App() {
   const [wladdress, setwladdress] = useState();
   const [vestingContract, setVestingContract] = useState();
   const [airdropContract, setAirdropContract] = useState();
+  const [crowdSaleContract, setContractCrowdSale] = useState();
   const [balance, setbalance] = useState(0);
   const [pending, setpending] = useState(0);
   const [vestingValue, setVestingValue] = useState(0);
@@ -80,6 +81,10 @@ function App() {
       contract_abi_merkel,
       contract_address_merkel
     );
+    const isCrowdSaleContract = new web3.eth.Contract(
+      contract_crowdsale_abi,
+      contract_crowdsale_address
+    );
     const isMainContract = new web3.eth.Contract(
       contract_main_abi,
       contract_main_address
@@ -87,6 +92,7 @@ function App() {
     setVestingContract(isVestingContract);
     setAirdropContract(isAirdropContract);
     setContractMain(isMainContract);
+    setContractCrowdSale(isCrowdSaleContract);
     setweb3global(web3);
   };
 
@@ -104,16 +110,20 @@ function App() {
 
   const callTGE = useCall();
   //WalletClient for write function of contract
-  const client = createWalletClient({
-    chain: mainnet,
-    transport: custom(window.ethereum),
-  });
+  // const client = createWalletClient({
+  //   chain: mainnet,
+  //   transport: custom(window.ethereum),
+  // });
 
   // First one time run
   useEffect(() => {
     const fun = async () => {
       await startFunction();
-      await getRewards();
+      if (chain.id === 1){
+        await getRewards();
+      }else {
+        swal.fire("Wrong Network Selected. Select Ethereum Mainnet");
+      }
     };
     fun();
   }, []);
@@ -347,7 +357,7 @@ function App() {
           functionName: "claimFromAllVestings",
         });
         console.log(request, "request");
-        await client.writeContract(request);
+        // await client.writeContract(request);
         // try {
         //   const estemated_Gas = await vestingContract.methods
         //     .claimFromAllVestings()
@@ -402,24 +412,24 @@ function App() {
           verification4 ||
           verification5
         ) {
-          const { request } = await publicClient.claimToken({
-            account: address,
-            address: contract_address_airdrop,
-            abi: contract_abi_airdrop,
-            functionName: "claimToken",
-            args: [proof1, proof2, proof3, proof4, proof5],
-          });
-          console.log(request, "request");
-          await client.writeContract(request);
+          // const { request } = await publicClient.claimToken({
+          //   account: address,
+          //   address: contract_address_airdrop,
+          //   abi: contract_abi_airdrop,
+          //   functionName: "claimToken",
+          //   args: [proof1, proof2, proof3, proof4, proof5],
+          // });
+          // console.log(request, "request");
+          // await client.writeContract(request);
 
-          // const result = await airdropContract.methods
-          //   .claimToken(proof1, proof2, proof3, proof4, proof5)
-          //   .send({
-          //     from: address,
-          //     gas: 600000,
-          //     maxPriorityFeePerGas: null,
-          //     maxFeePerGas: null,
-          //   });
+          const result = await airdropContract.methods
+            .claimToken(proof1, proof2, proof3, proof4, proof5)
+            .send({
+              from: address,
+              gas: 600000,
+              maxPriorityFeePerGas: null,
+              maxFeePerGas: null,
+            });
 
         } else {
           swal("Your address is not whitelisted");
