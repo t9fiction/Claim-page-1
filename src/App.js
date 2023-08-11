@@ -31,6 +31,7 @@ import {
   formatEther,
 } from "viem";
 import Swal from "sweetalert2";
+import useCall from './components/useCall.js';
 
 function App() {
   const { open, close } = useWeb3Modal();
@@ -101,6 +102,7 @@ function App() {
     transport: http(),
   });
 
+  const callTGE = useCall();
   //WalletClient for write function of contract
   const client = createWalletClient({
     chain: mainnet,
@@ -144,7 +146,7 @@ function App() {
       if (chain.id === 1) {
         handleConnection();
       } else {
-        swal.fire("Wrong Network Selected. Select Ethereum Mainnet");
+        swal("Wrong Network Selected. Select Ethereum Mainnet");
       }
     }
   }, [isConnected, chain, address]);
@@ -435,14 +437,15 @@ function App() {
     if (isConnected) {
       try {
         console.log("claimTGE function")
-        const { request } = await publicClient.simulateContract({
-          account: address,
-          address: contract_crowdsale_address,
-          abi: contract_crowdsale_abi,
-          functionName: "claimTGE",
-        });
-        console.log(request, "request");
-        await client.writeContract(request);
+        // const { request } = await publicClient.simulateContract({
+        //   account: address,
+        //   address: contract_crowdsale_address,
+        //   abi: contract_crowdsale_abi,
+        //   functionName: "claimTGE",
+        // });
+        // console.log(request, "request");
+        await callTGE()
+        // await client.writeContract(request);
       } catch (error) {
         console.log(error)
         show_error_alert(error);
